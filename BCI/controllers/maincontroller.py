@@ -1,7 +1,7 @@
-from componants.main import *
-from componants.live import *
-from componants.training import *
-from componants.testing import *
+from views.main import *
+from views.live import *
+from views.training import *
+from views.testing import *
 
 class mainController():
 
