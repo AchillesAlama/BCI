@@ -5,6 +5,9 @@ QToolButton, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from functools import partial
+from controllers.maincontroller import mainController
+
+changeView = mainController
 
 class mainWindow(QWidget):
 
@@ -23,7 +26,7 @@ class mainWindow(QWidget):
         liveBtn.setText('Live Mode')
         liveBtn.setIcon(QIcon(QPixmap('images/live_mode')))
         liveBtn.setIconSize(QSize(100, 100))
-        liveBtn.clicked.connect(partial(self.change_view, "live_mode"))
+        liveBtn.clicked.connect(lambda: changeView.change_view(self, "live_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         liveBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         
@@ -31,7 +34,7 @@ class mainWindow(QWidget):
         trainingBtn.setText('Training Mode')
         trainingBtn.setIcon(QIcon(QPixmap('images/training_mode')))
         trainingBtn.setIconSize(QSize(100, 100))
-        trainingBtn.clicked.connect(partial(self.change_view, "training_mode"))
+        trainingBtn.clicked.connect(lambda: changeView.change_view(self, "training_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         trainingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
@@ -39,7 +42,7 @@ class mainWindow(QWidget):
         testingBtn.setText('Teasting Mode')
         testingBtn.setIcon(QIcon(QPixmap('images/test_mode')))
         testingBtn.setIconSize(QSize(100, 100))
-        testingBtn.clicked.connect(partial(self.change_view, "test_mode"))
+        testingBtn.clicked.connect(lambda: changeView.change_view(self, "test_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         testingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
@@ -48,11 +51,11 @@ class mainWindow(QWidget):
         grid.addWidget(testingBtn)
 
         liveMode = QAction("&Live Mode", self)
-        liveMode.triggered.connect(partial(self.change_view, "live_mode"))
+        liveMode.triggered.connect(lambda: changeView.change_view(self, "live_mode"))
         trainingMode = QAction("&Training Mode", self)
-        trainingMode.triggered.connect(partial(self.change_view, "training_mode"))
+        trainingMode.triggered.connect(lambda: changeView.change_view(self, "training_mode"))
         testMode = QAction("&Test Mode", self)
-        testMode.triggered.connect(partial(self.change_view, "test_mode"))
+        testMode.triggered.connect(lambda: changeView.change_view(self, "test_mode"))
         
         viewMenu.addAction(liveMode)
         viewMenu.addAction(trainingMode)

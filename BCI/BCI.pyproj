@@ -53,7 +53,7 @@
     <Compile Include="controllers\trainingcontroller.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="model\model.py">
+    <Compile Include="model\model.py1">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

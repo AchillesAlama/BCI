@@ -15,6 +15,9 @@ class liveWindow(QWidget):
     def initPlot(self):
         grid = QGridLayout()
         
+        x = []
+        y = []
+
         for i in range(1,9):
             ch = pg.PlotWidget(title="Channel %d" % i)
             ch.plot(np.random.normal(size=100), pen=(255,0,0), name="Red curve")

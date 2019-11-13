@@ -9,10 +9,7 @@ from time import sleep
 import random
 from componants.startNewTest import startNewTestGUI 
 
-path = 'C:\\Users\\alama\\Desktop\\pic'
-
 class trainingController():
-    fileNames = None
 
     def saveSubject(subjectName,subjectBirthday,subjectGender,subjectNationality):
         n = subjectName.text()
@@ -36,10 +33,19 @@ class trainingController():
         self.w.setWindowState(Qt.WindowMaximized)
         self.w.show()
 
-    def scanFolder(self):
+    def pathFinder(self):
+        path1 = os.path.dirname(os.path.abspath(__file__))
+        path2 = os.path.split(path1)
+        path = os.path.join(path2[0],"data\\sets\\")
+        return path
+
+    def scanFolder(self,path):
         fileNames = os.listdir(path)
         return fileNames
 
     def timer():
         sleep(5)
         return True
+
+    def timeStamp(self):
+        timestamp = QDateTime.currentDateTime()

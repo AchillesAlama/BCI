@@ -3,28 +3,35 @@ from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
                             QLabel, QWidget, QMainWindow, QListWidget,
                            QGridLayout,QPushButton, QGroupBox,
                            QVBoxLayout, QToolButton, QHBoxLayout)
-from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 import pyqtgraph as pg
 import numpy as np
 import sys,os
 import time
 import random
 import threading
+import controllers.trainingcontroller
 
-path = 'C:\\Users\\alama\\Desktop\\pic'
 
 class startNewTestGUI(QWidget):
     def initWindow(self):
-        fileNames = os.listdir(path)
-        x = random.randint(0,4)
-        label = QLabel(self)
-        pixmap = QPixmap(path + '\\' + fileNames[x])
-        label.setPixmap(pixmap)
+        p = controllers.trainingcontroller.trainingController
+        path = p.pathFinder(self)
+        fileNames = p.scanFolder(self,path)
+        picID = []
+        arraySize = (len(fileNames)-1)
+        for i in range(0,arraySize):
+            x = random.randint(0,arraySize)
+            if x not in picID:
+                picID[i] = x
+
+        print(picID)
+        
 
     def __init__(self):
         QWidget.__init__(self)
         self.initWindow()
-        threading.Timer(5.0, self.initWindow()).start() 
         self.show()
 
+        
