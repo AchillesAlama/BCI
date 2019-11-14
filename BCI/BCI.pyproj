@@ -12,7 +12,7 @@
     <Name>BCI</Name>
     <RootNamespace>BCI</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>Global|PythonCore|3.7-32</InterpreterId>
+    <InterpreterId>MSBuild|virtualPythonEnv|$(MSBuildProjectFullPath)</InterpreterId>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -25,20 +25,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BCI.py" />
-    <Compile Include="componants\startNewTest.py">
+    <Compile Include="views\startNewTest.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="componants\live.py">
+    <Compile Include="views\live.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="componants\main.py">
+    <Compile Include="views\main.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="componants\testing.py">
+    <Compile Include="views\testing.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="componants\trainingOld.py" />
-    <Compile Include="componants\training.py">
+    <Compile Include="views\trainingOld.py" />
+    <Compile Include="views\training.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\livecontroller.py">
@@ -53,23 +53,31 @@
     <Compile Include="controllers\trainingcontroller.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="model\model.py1">
+    <Compile Include="models\model.py1">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="componants\" />
+    <Folder Include="views\" />
     <Folder Include="data\sets\" />
-    <Folder Include="model\" />
+    <Folder Include="models\" />
     <Folder Include="controllers\" />
     <Folder Include="data\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.7-32" />
+    <Content Include="models\subjects.txt" />
+    <Content Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="model\subjects.txt" />
-    <Content Include="test.txt" />
+    <Interpreter Include="..\virtualPythonEnv\">
+      <Id>virtualPythonEnv</Id>
+      <Version>3.6</Version>
+      <Description>virtualPythonEnv (Python 3.6 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

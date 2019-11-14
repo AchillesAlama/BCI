@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QAction, QWidget,
 QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
-QToolButton, QHBoxLayout)
+QToolButton, QHBoxLayout, QMenuBar)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from functools import partial
@@ -9,10 +9,11 @@ from controllers.maincontroller import mainController
 
 changeView = mainController
 
-class mainWindow(QWidget):
+class MainWindow(QWidget):
 
-    def initUI(self): 
-        mainMenu = self.menuBar()
+    def __init__(self, parent=None): 
+        super().__init__(parent)
+        mainMenu = QMenuBar()
         fileMenu = mainMenu.addMenu('File')
         editMenu = mainMenu.addMenu('Edit')
         viewMenu = mainMenu.addMenu('View')
@@ -65,5 +66,5 @@ class mainWindow(QWidget):
         self.windowLayout = QVBoxLayout()
         self.windowLayout.addWidget(self.horizontalGroupBox)
         self.setLayout(self.windowLayout)
-        self.setCentralWidget(self.horizontalGroupBox)
-        self.show()
+        #self.setCentralWidget(self.horizontalGroupBox)
+        #self.show()
