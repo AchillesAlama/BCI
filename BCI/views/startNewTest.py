@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
                             QLabel, QWidget, QMainWindow, QListWidget,
                            QGridLayout,QPushButton, QGroupBox,
                            QVBoxLayout, QToolButton, QHBoxLayout)
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 import pyqtgraph as pg
 import numpy as np
 import sys,os

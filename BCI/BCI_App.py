@@ -1,11 +1,10 @@
-import sys
 from PyQt5.QtWidgets import (QApplication, QAction, QWidget,
 QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
 QToolButton, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
-from functools import partial
-import controllers.mainController as MainCon
+import controllers.mainController as maincon
+import sys
 
 class App(QMainWindow):
 
@@ -13,7 +12,7 @@ class App(QMainWindow):
         super().__init__()
         self.title = 'BCI Hamburg Software v1.0'
         self.setWindowTitle(self.title)
-        self.controller = MainCon.MainController(parent=self)
+        self.controller = maincon.MainController(parent=self)
         self.setCentralWidget(self.controller.view)
         self.show()
 

@@ -1,7 +1,7 @@
-from views.mainView import *
-from views.liveView import *
-from views.trainingView import *
-from views.testingView import *
+from views.mainView import MainWindow
+from views.liveView import liveWindow
+from views.trainingView import trainingWindow
+from views.testingView import testingWindow
 
 class MainController():
     def __init__(self, parent=None):
