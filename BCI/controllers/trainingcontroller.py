@@ -49,3 +49,11 @@ class TrainingController():
 
     def timeStamp(self):
         timestamp = QDateTime.currentDateTime()
+
+    def moodCheck(i):
+        #tbc
+        #this will pass the number of the checked box to the model were it will be saved in DB
+        return
+    def startTraining():
+        #do shit
+        return
