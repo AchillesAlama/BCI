@@ -1,6 +1,6 @@
 import MySQLdb
 
-class trainingController():
+class TrainingController():
 
     def connectToDB():
         db = MySQLdb.connect("localhost","testuser","test123","TESTDB" )

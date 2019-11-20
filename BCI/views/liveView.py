@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QAction,
 import pyqtgraph as pg
 import numpy as np
 
-class liveWindow(QWidget):
+class LiveWindow(QWidget):
 
     def __init__(self, parent = None):
         super().__init__()

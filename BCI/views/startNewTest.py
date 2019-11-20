@@ -12,7 +12,7 @@ import threading
 import controllers.trainingController
 
 
-class startNewTestGUI(QWidget):
+class StartNewTestGUI(QWidget):
     def initWindow(self):
         p = controllers.trainingcontroller.trainingController
         path = p.pathFinder(self)

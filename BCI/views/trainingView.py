@@ -7,7 +7,7 @@ from PyQt5.QtCore import QSize, QThread, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from controllers.trainingController import trainingController
 
-class trainingWindow(QWidget):
+class TrainingWindow(QWidget):
 
     def __init__(self, parent=None):
         super().__init__()

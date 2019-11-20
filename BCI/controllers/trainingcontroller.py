@@ -9,7 +9,7 @@ from time import sleep
 import random
 from views.startNewTest import startNewTestGUI 
 
-class trainingController():
+class TrainingController():
 
     def saveSubject(subjectName,subjectBirthday,subjectGender,subjectNationality):
         n = subjectName.text()
