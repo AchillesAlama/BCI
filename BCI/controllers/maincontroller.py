@@ -3,7 +3,7 @@ from views.live import *
 from views.training import *
 from views.testing import *
 
-class mainController():
+class MainController():
 
     def change_view(self, viewName):
         if viewName == "live_mode":
