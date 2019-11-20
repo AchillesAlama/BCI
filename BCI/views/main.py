@@ -40,7 +40,7 @@ class MainWindow(QWidget):
         trainingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         testingBtn = QToolButton()
-        testingBtn.setText('Teasting Mode')
+        testingBtn.setText('Testing Mode')
         testingBtn.setIcon(QIcon(QPixmap('images/test_mode')))
         testingBtn.setIconSize(QSize(100, 100))
         testingBtn.clicked.connect(lambda: changeView.change_view(self, "test_mode"))
