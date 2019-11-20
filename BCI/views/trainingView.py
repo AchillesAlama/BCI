@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSize, QThread, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from controllers.trainingController import trainingController
+from controllers.trainingController import TrainingController
 
 class TrainingWindow(QWidget):
 

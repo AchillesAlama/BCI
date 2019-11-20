@@ -3,7 +3,7 @@ QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
 QToolButton, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
-import controllers.mainController as maincon
+from controllers.mainController import MainController
 import sys
 
 class App(QMainWindow):
@@ -12,7 +12,7 @@ class App(QMainWindow):
         super().__init__()
         self.title = 'BCI Hamburg Software v1.0'
         self.setWindowTitle(self.title)
-        self.controller = maincon.MainController(parent=self)
+        self.controller = MainController(parent=self)
         self.setCentralWidget(self.controller.view)
         self.show()
 

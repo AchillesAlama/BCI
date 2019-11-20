@@ -7,7 +7,7 @@ import os
 from shutil import copyfile, rmtree
 from time import sleep
 import random
-from views.startNewTest import startNewTestGUI 
+from views.startNewTest import StartNewTestGUI 
 
 class TrainingController():
 

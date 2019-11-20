@@ -1,7 +1,7 @@
 from views.mainView import MainWindow
-from views.liveView import liveWindow
-from views.trainingView import trainingWindow
-from views.testingView import testingWindow
+from views.liveView import LiveWindow
+from views.trainingView import TrainingWindow
+from views.testingView import TestingWindow
 
 class MainController():
     def __init__(self, parent=None):
@@ -10,8 +10,8 @@ class MainController():
 
     def change_view(self, viewName):
         if viewName == "live_mode":
-            self.parent.setCentralWidget(liveWindow(self))
+            self.parent.setCentralWidget(LiveWindow(self))
         elif viewName == "test_mode":
-            self.parent.setCentralWidget(testingWindow(self))
+            self.parent.setCentralWidget(TestingWindow(self))
         elif viewName == "training_mode":
-            self.parent.setCentralWidget(trainingWindow(self))
+            self.parent.setCentralWidget(TrainingWindow(self))
