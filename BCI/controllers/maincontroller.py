@@ -1,14 +1,17 @@
-from views.main import *
-from views.live import *
-from views.training import *
-from views.testing import *
+from views.mainView import *
+from views.liveView import *
+from views.trainingView import *
+from views.testingView import *
 
 class MainController():
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.view = MainWindow(parent=self)
 
     def change_view(self, viewName):
         if viewName == "live_mode":
-            self.setCentralWidget(liveWindow(self))
+            self.parent.setCentralWidget(liveWindow(self))
         elif viewName == "test_mode":
-            self.setCentralWidget(testingWindow(self))
+            self.parent.setCentralWidget(testingWindow(self))
         elif viewName == "training_mode":
-            self.setCentralWidget(trainingWindow(self))
+            self.parent.setCentralWidget(trainingWindow(self))

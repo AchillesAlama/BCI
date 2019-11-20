@@ -7,8 +7,9 @@ import numpy as np
 
 class liveWindow(QWidget):
 
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent = None):
+        super().__init__()
+        self.parent = parent
         self.initPlot()
         self.show()
 

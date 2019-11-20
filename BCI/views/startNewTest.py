@@ -11,7 +11,7 @@ import sys,os
 import time
 import random
 import threading
-import controllers.trainingcontroller
+import controllers.trainingController
 
 
 class startNewTestGUI(QWidget):

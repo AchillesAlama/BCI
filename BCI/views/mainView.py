@@ -5,14 +5,12 @@ QToolButton, QHBoxLayout, QMenuBar)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from functools import partial
-from controllers.maincontroller import MainController
-
-changeView = MainController
 
 class MainWindow(QWidget):
 
     def __init__(self, parent=None): 
-        super().__init__(parent)
+        super().__init__()
+        self.parent = parent
         mainMenu = QMenuBar()
         fileMenu = mainMenu.addMenu('File')
         editMenu = mainMenu.addMenu('Edit')
@@ -27,7 +25,7 @@ class MainWindow(QWidget):
         liveBtn.setText('Live Mode')
         liveBtn.setIcon(QIcon(QPixmap('images/live_mode')))
         liveBtn.setIconSize(QSize(100, 100))
-        liveBtn.clicked.connect(lambda: changeView.change_view(self, "live_mode"))
+        liveBtn.clicked.connect(lambda: self.parent.change_view("live_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         liveBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         
@@ -35,7 +33,7 @@ class MainWindow(QWidget):
         trainingBtn.setText('Training Mode')
         trainingBtn.setIcon(QIcon(QPixmap('images/training_mode')))
         trainingBtn.setIconSize(QSize(100, 100))
-        trainingBtn.clicked.connect(lambda: changeView.change_view(self, "training_mode"))
+        trainingBtn.clicked.connect(lambda: self.parent.change_view("training_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         trainingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
@@ -43,7 +41,7 @@ class MainWindow(QWidget):
         testingBtn.setText('Testing Mode')
         testingBtn.setIcon(QIcon(QPixmap('images/test_mode')))
         testingBtn.setIconSize(QSize(100, 100))
-        testingBtn.clicked.connect(lambda: changeView.change_view(self, "test_mode"))
+        testingBtn.clicked.connect(lambda: self.parent.change_view("test_mode"))
         self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
         testingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
@@ -52,11 +50,11 @@ class MainWindow(QWidget):
         grid.addWidget(testingBtn)
 
         liveMode = QAction("&Live Mode", self)
-        liveMode.triggered.connect(lambda: changeView.change_view(self, "live_mode"))
+        liveMode.triggered.connect(lambda: self.parent.change_view("live_mode"))
         trainingMode = QAction("&Training Mode", self)
-        trainingMode.triggered.connect(lambda: changeView.change_view(self, "training_mode"))
+        trainingMode.triggered.connect(lambda: self.parent.change_view("training_mode"))
         testMode = QAction("&Test Mode", self)
-        testMode.triggered.connect(lambda: changeView.change_view(self, "test_mode"))
+        testMode.triggered.connect(lambda: self.parent.change_view("test_mode"))
         
         viewMenu.addAction(liveMode)
         viewMenu.addAction(trainingMode)

@@ -5,12 +5,13 @@ from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSize, QThread, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from controllers.trainingcontroller import trainingController
+from controllers.trainingController import trainingController
 
 class trainingWindow(QWidget):
 
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent=None):
+        super().__init__()
+        self.parent = parent
         self.initTraining()
         self.show()
 

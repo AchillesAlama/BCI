@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9133aa02-79b6-41a2-9625-05ad9e13c2dd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>BCI.py</StartupFile>
+    <StartupFile>BCI_App.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,36 +24,35 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BCI.py" />
+    <Compile Include="BCI_App.py" />
     <Compile Include="views\startNewTest.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="views\live.py">
+    <Compile Include="views\liveView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="views\main.py">
+    <Compile Include="views\mainView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="views\testing.py">
+    <Compile Include="views\testingView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="views\trainingOld.py" />
-    <Compile Include="views\training.py">
+    <Compile Include="views\trainingView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="controllers\livecontroller.py">
+    <Compile Include="controllers\liveController.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="controllers\maincontroller.py">
+    <Compile Include="controllers\mainController.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="controllers\testingcontroller.py">
+    <Compile Include="controllers\testingController.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="controllers\trainingcontroller.py">
+    <Compile Include="controllers\trainingController.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="models\model.py1">
+    <Compile Include="models\mainModel.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -66,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="models\subjects.txt" />
-    <Content Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="..\virtualPythonEnv\">
