@@ -15,12 +15,23 @@ class TrainingWindow(QWidget):
         self.initTraining()
         self.show()
 
-    def initTraining(self):
-        grid = QGridLayout()
+    def initAddUserPopUp(self):
+        self.title = 'Add User Form'
+        self.left = 10
+        self.top = 10
+        self.width = 320
+        self.height = 200
+        self.initAddUserPopUpUI()
+        
+    def initAddUserPopUpUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        addUserPopup = QMessageBox.question(self, 'Please fill in the fields', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         
         windowExample = QtWidgets.QWidget()
-        labelSubject = QtWidgets.QLabel(windowExample)
-        labelSubject.setText('Name: ')
+        labelName = QtWidgets.QLabel(windowExample)
+        labelName.setText('Name: ')
         labelBirthday = QtWidgets.QLabel(windowExample)
         labelBirthday.setText('Birthday: ')
         labelGender = QtWidgets.QLabel(windowExample)
@@ -28,71 +39,72 @@ class TrainingWindow(QWidget):
         labelNationality = QtWidgets.QLabel(windowExample)
         labelNationality.setText('Nationality: ')
 
-        subjectName = QLineEdit(self)
-        subjectBirthday = QLineEdit(self)
-        subjectGender = QLineEdit(self)
-        subjectNationality = QLineEdit(self)
-        addSubjectButton = QPushButton('Add Subject', self)
-        addSubjectButton.pressed.connect(lambda: trainingController.saveSubject(subjectName,subjectBirthday,subjectGender,subjectNationality))
+        userName = QLineEdit(self)
+        userBirthday = QLineEdit(self)
+        userGender = QLineEdit(self)
+        userNationality = QLineEdit(self)
+        
+        if addUserPopup == QMessageBox.Yes:
+            lambda: trainingController.saveUser(userName,userBirthday,userGender,userNationality)
+            addUserPopup.apply
+        else:
+            addUserPopup.cancel
 
-        startBtn = QPushButton("Start set")
-        newBtn = QPushButton("New set")
-        editBtn = QPushButton("Edit set")
-        #editBtn.clicked.connect()
-        editBtn.setEnabled(False)
-        newBtn.clicked.connect(lambda: trainingController.startNewTest(self))
-        #startBtn.clicked.connect()
-        startBtn.setEnabled(False)
 
-        subjectList = QListWidget()
-        subjectList.setWindowTitle('Subjects List')
-        subjectList.setMaximumSize(100, 100)
-        subjectList.setMinimumSize(100, 100)
-
-        trainingTestsList = QListWidget()
-        trainingTestsList.setWindowTitle('Example List')
-        trainingTestsList.setMaximumSize(100, 200)
-        trainingTestsList.setMinimumSize(100, 200)
-        #trainingTestsList.itemSelectionChanged.connect(lambda: trainingController.newSetSelection)
+    def initTraining(self):
+        grid = QGridLayout()
 
         #Top left
-        topLeft = QGroupBox("Add New Subject")
+        addUser = QPushButton("Add User")
+        editUser = QPushButton("Edit User")
+        deleteUser = QPushButton("Delete User")
+        addUser.clicked.connect(initAddUserPopUp(self))
+
+        topLeft = QGroupBox("Training Tests List")
         newTopLeft = QVBoxLayout()
-        newTopLeft.addWidget(labelSubject)
-        newTopLeft.addWidget(subjectName)
-        newTopLeft.addWidget(labelBirthday)
-        newTopLeft.addWidget(subjectBirthday)
-        newTopLeft.addWidget(labelGender)
-        newTopLeft.addWidget(subjectGender)
-        newTopLeft.addWidget(labelNationality)
-        newTopLeft.addWidget(subjectNationality)
-        newTopLeft.addWidget(addSubjectButton)
-        newTopLeft.addStretch(1)
+        newTopLeft.addWidget(userList)
         topLeft.setLayout(newTopLeft)
-        topLeft.setMaximumSize(150,250)
+        topLeft.setMaximumSize(150,150)
 
         #Top right
         topRight = QGroupBox("Training Tests List")
         newTopRight = QVBoxLayout()
-        newTopRight.addWidget(trainingTestsList)
-        topRight.setLayout(newTopRight)
-        topRight.setMaximumSize(150,250)
+        self.listCheckBox = ["Happy", "Sad", "Despressed", "F U", "idgaf"]
+        for i, v in enumerate(self.listCheckBox):
+            self.listCheckBox[i] = QCheckBox(v)
+            self.listLabel[i] = QLabel()
+            newTopRight.addWidget(self.listCheckBox[i], i, 0)
+
+        for i, v in enumerate(self.listCheckBox):
+            if self.listCheckBox[i].isChecked():
+                lambda: trainingController.moodCheck(i)
+            else:
+                print("no boxes checked")
+
+
 
         #Bottom left
-        bottomLeft = QGroupBox("Training Tests List")
+        userList = QListWidget()
+        userList.setWindowTitle('User List')
+        userList.setMaximumSize(100, 100)
+        userList.setMinimumSize(100, 100)
+
+        bottomLeft = QGroupBox("Add New User")
         newBottomLeft = QVBoxLayout()
-        newBottomLeft.addWidget(subjectList)
+        newBottomLeft.addWidget(addUser)
+        newBottomLeft.addWidget(editUser)
+        newBottomLeft.addWidget(deleteUser)
+        newBottomLeft.addStretch(1)
         bottomLeft.setLayout(newBottomLeft)
-        bottomLeft.setMaximumSize(150,150)
+        bottomLeft.setMaximumSize(150,250)
 
         #Bottom right
         bottomRight = QGroupBox("Settings")
         newBottomRight = QVBoxLayout()
-        newBottomRight.addWidget(startBtn)
-        newBottomRight.addWidget(newBtn)
-        newBottomRight.addWidget(editBtn)
-        bottomRight.setLayout(newBottomRight)
-        bottomRight.setMaximumSize(150,150)
+        startTraining = QPushButton("Start")
+        lambda: trainingController.startTraining()
+        newBottomRight.addWidget(startTraining)
+
 
         grid.addWidget(topLeft, 0, 0)
         grid.addWidget(topRight, 0, 1)
