@@ -64,5 +64,3 @@ class MainWindow(QWidget):
         self.windowLayout = QVBoxLayout()
         self.windowLayout.addWidget(self.horizontalGroupBox)
         self.setLayout(self.windowLayout)
-        #self.setCentralWidget(self.horizontalGroupBox)
-        #self.show()
