@@ -5,9 +5,9 @@ QToolButton, QHBoxLayout, QMenuBar)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from functools import partial
-from controllers.maincontroller import mainController
+from controllers.maincontroller import MainController
 
-changeView = mainController
+changeView = MainController
 
 class MainWindow(QWidget):
 
