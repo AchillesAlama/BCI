@@ -25,7 +25,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BCI_App.py" />
+    <Compile Include="controllers\dbController.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="controllers\trainingController.py" />
+    <Compile Include="models\dbModel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utility\ultraCortexConnector.py" />
     <Compile Include="views\startNewTest.py">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +62,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="utility\" />
     <Folder Include="views\" />
     <Folder Include="data\sets\" />
     <Folder Include="models\" />

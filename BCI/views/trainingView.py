@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
                             QLabel, QWidget, QMainWindow, QListWidget,
                            QGridLayout,QPushButton, QGroupBox,
-                           QVBoxLayout, QToolButton, QHBoxLayout)
+                           QVBoxLayout, QToolButton, QHBoxLayout, QMessageBox)
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSize, QThread, Qt
 from PyQt5.QtGui import QIcon, QPixmap
@@ -27,7 +27,7 @@ class TrainingWindow(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        addUserPopup = QMessageBox.question(self, 'Please fill in the fields', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        addUserPopup = QMessageBox.question(self, 'User data', 'Please fill in the fields', QMessageBox.Yes | QMessageBox.No)
         
         windowExample = QtWidgets.QWidget()
         labelName = QtWidgets.QLabel(windowExample)
@@ -58,7 +58,7 @@ class TrainingWindow(QWidget):
         addUser = QPushButton("Add User")
         editUser = QPushButton("Edit User")
         deleteUser = QPushButton("Delete User")
-        addUser.clicked.connect(initAddUserPopUp(self))
+        addUser.clicked.connect(self.initAddUserPopUp())
 
         topLeft = QGroupBox("Training Tests List")
         newTopLeft = QVBoxLayout()
