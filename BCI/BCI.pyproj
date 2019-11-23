@@ -25,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BCI_App.py" />
+    <Compile Include="controllers\trainingController.py" />
     <Compile Include="views\startNewTest.py">
       <SubType>Code</SubType>
     </Compile>
@@ -47,9 +48,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\testingController.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="controllers\trainingController.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="models\mainModel.py">
