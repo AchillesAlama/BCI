@@ -1,7 +1,6 @@
-from orator import DatabaseManager, Model
-from orator.orm.utils import has_many, belongs_to 
 from datetime import datetime
-import models.dbModel
+from models.dbModel import User, Channel, Run, Measurement
+from orator import DatabaseManager, Model
 
 class DBController():
 
@@ -51,4 +50,31 @@ class DBController():
         newMeasurement.Channel().associate(channel)
         return newMeasurement
 
+    def dummyDataGen(self):
+        """ Creates a new user, new run, 16 channels and random data and 
+        saves to DB. For filling DB with dummy data for debugging purposes.
+        """
+        # Make new user and run
+        import random as r
+        newUser = self.makeUser("DummyUser", "1881-01-01", "male", "north korean")
+        newUser.save()
+        newRun = self.makeRun(1, newUser)
+        newRun.save()
+        placements = ["fp1", "fp2", "c3", "c4", #Order matches numbers 1-16 in OpenBCI head plot
+                      "t5", "t6", "o1", "o2", 
+                      "f7", "f8", "f3", "f4", 
+                      "t3", "t4", "p3", "p4"]
+        channels = []
 
+        #Make channels
+        for i, place in enumerate(placements):
+            newChan = self.makeChannel(i, place, "uV", newRun)
+            newChan.save()
+            channels.append(newChan)
+
+        #Create measurements for each channel
+        nMeasurements = 1000
+        for counter in range(0,nMeasurements):
+            for chan in channels:
+                newMeas = self.makeMeasurement(r.randrange(10000), counter, chan)
+                newMeas.save()

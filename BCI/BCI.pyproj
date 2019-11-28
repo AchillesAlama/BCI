@@ -28,6 +28,7 @@
     <Compile Include="controllers\dbController.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="controllers\mainController.py" />
     <Compile Include="controllers\trainingController.py" />
     <Compile Include="models\dbModel.py">
       <SubType>Code</SubType>
@@ -49,9 +50,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\liveController.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="controllers\mainController.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\testingController.py">

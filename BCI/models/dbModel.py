@@ -1,4 +1,6 @@
-########################################## MODEL DEFINITIONS (must reflect real DB) ############################################
+from orator import Model
+from orator.orm.utils import has_many, belongs_to 
+
 class User(Model):
     __table__= 'User'
     __primary_key__ = 'User_ID'
