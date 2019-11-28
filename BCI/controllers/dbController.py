@@ -43,7 +43,7 @@ class DBController():
     
     def makeMeasurement(self, value, sampleNumber, channel):
         newMeasurement = Measurement()
-        currentTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        currentTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         newMeasurement.Timestamp = currentTime
         newMeasurement.Value = value
         newMeasurement.SampleNumber = sampleNumber
@@ -73,7 +73,7 @@ class DBController():
             channels.append(newChan)
 
         #Create measurements for each channel
-        nMeasurements = 1000
+        nMeasurements = 100
         for counter in range(0,nMeasurements):
             for chan in channels:
                 newMeas = self.makeMeasurement(r.randrange(10000), counter, chan)
