@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets,Qt
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QFont
 from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
                             QLabel, QWidget, QMainWindow, QListWidget,
                            QGridLayout,QPushButton, QGroupBox,
@@ -6,30 +7,28 @@ from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
 import pyqtgraph as pg
 import numpy as np
 import sys,os
-import time
+from time import sleep
 import random
+import datetime
 import threading
 import controllers.trainingController
 
 
 class StartNewTestGUI(QWidget):
-    def initWindow(self):
-        p = controllers.trainingcontroller.trainingController
-        path = p.pathFinder(self)
-        fileNames = p.scanFolder(self,path)
-        picID = []
-        arraySize = (len(fileNames)-1)
-        for i in range(0,arraySize):
-            x = random.randint(0,arraySize)
-            if x not in picID:
-                picID[i] = x
 
-        print(picID)
-        
+    def delay(self,duration_in_seconds):
+        current_time = datetime.datetime.now()
+        end_time = current_time + datetime.timedelta(0,duration_in_seconds)
+        while current_time < end_time:
+            current_time = datetime.datetime.now()
 
-    def __init__(self):
-        QWidget.__init__(self)
-        self.initWindow()
-        self.show()
-
-        
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        qp.setPen(QColor(200, 0, 0))
+        qp.setBrush(QColor(200, 0, 0))
+        self.delay(2)
+        qp.drawRect(500, 500, 100, 100)
+        #self.delay(2)
+        #qp.eraseRect(500, 500, 100, 100)
+        qp.end()
