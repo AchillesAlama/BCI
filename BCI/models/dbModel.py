@@ -40,7 +40,7 @@ class Measurement(Model):
     __table__= 'Measurement'
     __primary_key__ = 'Measurement_ID'
     __timestamps__ = False
-    __fillable__ = ['Value', 'Timestamp', 'Samplenumber']
+    __fillable__ = ['Value', 'Timestamp', 'Samplenumber', 'Category']
 
     @belongs_to('idChannel', 'Channel_ID')
     def Channel(self):

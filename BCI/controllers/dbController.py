@@ -41,12 +41,13 @@ class DBController():
         newRun.User().associate(user) 
         return newRun
     
-    def makeMeasurement(self, value, sampleNumber, channel):
+    def makeMeasurement(self, value, sampleNumber, channel, category):
         newMeasurement = Measurement()
         currentTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         newMeasurement.Timestamp = currentTime
         newMeasurement.Value = value
         newMeasurement.SampleNumber = sampleNumber
+        newMeasurement.Category = category
         newMeasurement.Channel().associate(channel)
         return newMeasurement
 
@@ -89,9 +90,11 @@ class DBController():
 
         #Create measurements for each channel
         nMeasurements = 100
+        currentCat = r.randint(1,5)
         for counter in range(0,nMeasurements):
+            currentCat = r.randint(1,5) if counter % 10 == 0 else currentCat
             for chan in channels:
-                newMeas = self.makeMeasurement(r.randrange(10000), counter, chan)
+                newMeas = self.makeMeasurement(r.randrange(10000), counter, chan, currentCat)
                 newMeas.save()
 
     def getUserSamples(self, user, testType):
@@ -109,7 +112,7 @@ class DBController():
         """
         resultDict = {}
         for i in range(1, 16):
-            userSampleQuery = """select measurement.Value, measurement.Timestamp from 
+            userSampleQuery = """select measurement.Value, measurement.Timestamp, measurement.Category from 
 measurement join channel on channel.channel_id = measurement.idChannel
 join Run on run.run_id = channel.idRun
 join User on user.user_id = run.idUser

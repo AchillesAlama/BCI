@@ -8,6 +8,9 @@ class TestingWindow(QWidget):
         super().__init__()
         self.parent = parent
         self.initTesting()
+
+        from controllers.dbController import DBController
+        DBController().dummyDataGen("Hans Schwitzensteiner")
         self.show()
 
     def initTesting(self):
