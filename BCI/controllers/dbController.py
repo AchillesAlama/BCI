@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from models.dbModel import User, Channel, Run, Measurement
 from orator import DatabaseManager, Model
 
@@ -50,13 +50,28 @@ class DBController():
         newMeasurement.Channel().associate(channel)
         return newMeasurement
 
-    def dummyDataGen(self):
+    def dummyDataGen(self, username):
         """ Creates a new user, new run, 16 channels and random data and 
         saves to DB. For filling DB with dummy data for debugging purposes.
         """
         # Make new user and run
         import random as r
-        newUser = self.makeUser("DummyUser", "1881-01-01", "male", "north korean")
+
+        #get random date between two dates
+        start = datetime(1990, 1, 1, 0, 0, 0)
+        end = datetime.now()
+        birth = start + timedelta(seconds=r.randint(0, int((end - start).total_seconds())))
+        birth = birth.date()
+
+        #random male or female
+        gender = "male" if r.randint(0, 1) == 0 else "female"
+
+        #nationality 
+        nations = ["english", "american", "bulgarian", "spanish", "french", "german", "swedish", "danish", "norwegian"]
+        nationality = nations[r.randint(0, len(nations)-1)]
+
+        #make user
+        newUser = self.makeUser(username, birth, gender, nationality)
         newUser.save()
         newRun = self.makeRun(1, newUser)
         newRun.save()
@@ -78,3 +93,30 @@ class DBController():
             for chan in channels:
                 newMeas = self.makeMeasurement(r.randrange(10000), counter, chan)
                 newMeas.save()
+
+    def getUserSamples(self, user, testType):
+        """Returns all time samples for a certain user for a certain test type.
+        @user (string):     
+            User for which to find samples
+        @testType (int): 
+            Integer code for which kind of training mode was used when 
+            gathering the data.
+        @return (dict): 
+            Dict with arrays of dicts, 
+            on the form {channel 1: [{value: ..., timestamp: ...}],
+                         channel 2: [...]}. 
+            Each channel sorted by timestamp.
+        """
+        resultDict = {}
+        for i in range(1, 16):
+            userSampleQuery = """select measurement.Value, measurement.Timestamp from 
+measurement join channel on channel.channel_id = measurement.idChannel
+join Run on run.run_id = channel.idRun
+join User on user.user_id = run.idUser
+where channel.Number = %d and 
+user.name = "%s" and 
+run.type = %d 
+order by measurement.timestamp""" % (i, user, testType)
+            resultDict["channel " + str(i)] = self.db.select(userSampleQuery)
+        
+        return resultDict
