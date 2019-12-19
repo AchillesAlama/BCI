@@ -12,7 +12,8 @@
     <Name>BCI</Name>
     <RootNamespace>BCI</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <InterpreterId>MSBuild|virtualPythonEnv|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>
+    </InterpreterId>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -69,17 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="models\subjects.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Interpreter Include="..\virtualPythonEnv\">
-      <Id>virtualPythonEnv</Id>
-      <Version>3.6</Version>
-      <Description>virtualPythonEnv (Python 3.6 (64-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X64</Architecture>
-    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
