@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from controllers.mainController import MainController
 import sys
+from functools import partial
 
 class App(QMainWindow):
 
@@ -22,10 +23,10 @@ class App(QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&Mode')
 
-        #Add manu options for changing between modes
+        #Add menu options for changing between modes
         for mode in ["live_mode", "training_mode", "test_mode"]:
             modeAction = QAction('&' + mode.replace("_", " ").title(), self)
-            modeAction.triggered.connect(lambda: self.controller.change_view(mode))
+            modeAction.triggered.connect(partial(self.controller.change_view, mode))
             fileMenu.addAction(modeAction)
 
         self.show()

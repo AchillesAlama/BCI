@@ -30,7 +30,7 @@ class MainWindow(QWidget):
             modeBtn.setIcon(QIcon(QPixmap('images/'+ mode)))
             modeBtn.setIconSize(QSize(200, 200))
             modeBtn.setFont(btnFont)
-            modeBtn.clicked.connect(lambda: self.parent.change_view(mode))
+            modeBtn.clicked.connect(partial(self.parent.change_view, mode))
             modeBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
             grid.addWidget(modeBtn)
   
