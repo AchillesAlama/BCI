@@ -2,64 +2,38 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QAction, QWidget,
 QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
 QToolButton, QHBoxLayout, QMenuBar)
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import pyqtSlot, QSize, Qt
 from functools import partial
 
 class MainWindow(QWidget):
+    """First thing user sees when opening application,
+    should be a choice between the possible modes of the application."""
 
     def __init__(self, parent=None): 
         super().__init__()
         self.parent = parent
-        mainMenu = QMenuBar()
-        fileMenu = mainMenu.addMenu('File')
-        editMenu = mainMenu.addMenu('Edit')
-        viewMenu = mainMenu.addMenu('View')
-        helpMenu = mainMenu.addMenu('Help')
- 
-        # Make grid and add mode buttons
+        self.initUI()
+        self.show()
+
+    def initUI(self):
+        """Creates all user interface elements."""
+        
         self.horizontalGroupBox = QGroupBox()
         grid = QHBoxLayout()
-        
-        liveBtn = QToolButton()
-        liveBtn.setText('Live Mode')
-        liveBtn.setIcon(QIcon(QPixmap('images/live_mode')))
-        liveBtn.setIconSize(QSize(100, 100))
-        liveBtn.clicked.connect(lambda: self.parent.change_view("live_mode"))
-        self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
-        liveBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        
-        trainingBtn = QToolButton()
-        trainingBtn.setText('Training Mode')
-        trainingBtn.setIcon(QIcon(QPixmap('images/training_mode')))
-        trainingBtn.setIconSize(QSize(100, 100))
-        trainingBtn.clicked.connect(lambda: self.parent.change_view("training_mode"))
-        self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
-        trainingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
-        testingBtn = QToolButton()
-        testingBtn.setText('Testing Mode')
-        testingBtn.setIcon(QIcon(QPixmap('images/test_mode')))
-        testingBtn.setIconSize(QSize(100, 100))
-        testingBtn.clicked.connect(lambda: self.parent.change_view("test_mode"))
-        self.setStyleSheet("QToolButton { min-width: 200px; min-height: 180px; font-family: helvetica; font-size: 24px}")
-        testingBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-
-        grid.addWidget(liveBtn)
-        grid.addWidget(trainingBtn)
-        grid.addWidget(testingBtn)
-
-        liveMode = QAction("&Live Mode", self)
-        liveMode.triggered.connect(lambda: self.parent.change_view("live_mode"))
-        trainingMode = QAction("&Training Mode", self)
-        trainingMode.triggered.connect(lambda: self.parent.change_view("training_mode"))
-        testMode = QAction("&Test Mode", self)
-        testMode.triggered.connect(lambda: self.parent.change_view("test_mode"))
-        
-        viewMenu.addAction(liveMode)
-        viewMenu.addAction(trainingMode)
-        viewMenu.addAction(testMode)
-
+        #Create and add the 3 buttons
+        btnFont = QFont('Helvetica', 16, 50)
+        for mode in ['live_mode', 'training_mode', 'test_mode']:
+            modeBtn = QToolButton(self)
+            modeBtn.setText(mode.replace("_", " ").title())
+            modeBtn.setIcon(QIcon(QPixmap('images/'+ mode)))
+            modeBtn.setIconSize(QSize(200, 200))
+            modeBtn.setFont(btnFont)
+            modeBtn.clicked.connect(lambda: self.parent.change_view(mode))
+            modeBtn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            grid.addWidget(modeBtn)
+  
         self.horizontalGroupBox.setLayout(grid)
         self.windowLayout = QVBoxLayout()
         self.windowLayout.addWidget(self.horizontalGroupBox)
