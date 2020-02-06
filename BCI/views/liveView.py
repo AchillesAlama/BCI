@@ -1,7 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QAction,
-                            QLabel, QWidget, QMainWindow,
-                           QGridLayout,QPushButton, QGroupBox,
-                           QVBoxLayout, QToolButton, QHBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QGridLayout)
 import pyqtgraph as pg
 import numpy as np
 
@@ -11,7 +8,6 @@ class LiveWindow(QWidget):
         super().__init__()
         self.parent = parent
         self.initPlot()
-        self.show()
 
     def initPlot(self):
         grid = QGridLayout()

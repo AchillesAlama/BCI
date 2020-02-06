@@ -1,7 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QAction, QLineEdit,
-                            QLabel, QWidget, QMainWindow, QListWidget,
-                           QGridLayout,QPushButton, QGroupBox,
-                           QVBoxLayout, QToolButton, QHBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QGridLayout)
 
 class TestingWindow(QWidget):
     def __init__(self, parent = None):
@@ -11,7 +8,6 @@ class TestingWindow(QWidget):
 
         from controllers.dbController import DBController
         DBController().dummyDataGen("Hans Schwitzensteiner")
-        self.show()
 
     def initTesting(self):
         testGrid = QGridLayout()

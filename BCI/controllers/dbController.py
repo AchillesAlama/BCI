@@ -106,7 +106,7 @@ class DBController():
             gathering the data.
         @return (dict): 
             Dict with arrays of dicts, 
-            on the form {channel 1: [{value: ..., timestamp: ...}],
+            on the form {channel 1: [{value: ..., timestamp: ..., category: ...}],
                          channel 2: [...]}. 
             Each channel sorted by timestamp.
         """
@@ -123,3 +123,16 @@ order by measurement.timestamp""" % (i, user, testType)
             resultDict["channel " + str(i)] = self.db.select(userSampleQuery)
         
         return resultDict
+
+    def getAllUsers(self):
+        """Returns a list of dicts with info of all users in DB"""
+        userQuery = "select * from user"
+        return self.db.select(userQuery)
+
+    def deleteUser(self, userID):
+        """Deletes user from database based on user ID.
+        @userID (str): 
+            ID of user to be deleted.
+        """
+        deletedRows = User.where('user_id', '=', userID).delete()
+        

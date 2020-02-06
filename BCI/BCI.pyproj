@@ -5,8 +5,7 @@
     <ProjectGuid>9133aa02-79b6-41a2-9625-05ad9e13c2dd</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>BCI_App.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>controllers;models;views</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>BCI</Name>
@@ -29,11 +28,17 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\mainController.py" />
+    <Compile Include="controllers\runController.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="controllers\trainingController.py" />
     <Compile Include="models\dbModel.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utility\ultraCortexConnector.py" />
+    <Compile Include="views\runView.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="views\startNewTest.py">
       <SubType>Code</SubType>
     </Compile>
@@ -58,6 +63,7 @@
     <Compile Include="models\mainModel.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="utility\" />

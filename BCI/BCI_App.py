@@ -1,8 +1,6 @@
-from PyQt5.QtWidgets import (QApplication, QAction, QWidget,
-QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
-QToolButton, QHBoxLayout)
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import pyqtSlot, QSize, Qt
+from PyQt5.QtWidgets import (QApplication, QAction,
+QMainWindow, QStackedWidget)
+
 from controllers.mainController import MainController
 import sys
 from functools import partial
@@ -15,9 +13,20 @@ class App(QMainWindow):
         self.title = 'BCI Hamburg Software v1.0'
         self.setWindowTitle(self.title)
 
-        #Create main controller and set its view to central widget
+        #Create the main controller of this application(mostly switches modes)
         self.controller = MainController(parent=self)
-        self.setCentralWidget(self.controller.view)
+
+        #Add all elements who will take up main window to stacked widget
+        #in order to switch between views without having to recreate
+        #them each time
+        self.mainSpace = QStackedWidget()
+        self.setCentralWidget(self.mainSpace)
+        self.mainSpace.addWidget(self.controller.view)
+        self.mainSpace.addWidget(self.controller.trainingController.view)
+        self.mainSpace.addWidget(self.controller.testingController.view)
+        self.mainSpace.addWidget(self.controller.liveController.view)
+        self.mainSpace.setCurrentWidget(self.controller.view)
+        self.adjustSize() #TODO: QStackedWidget sizes to biggest of its widgets, keep or change?
 
         #Menu belongs to main window
         menubar = self.menuBar()

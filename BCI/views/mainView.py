@@ -1,9 +1,8 @@
 import sys
-from PyQt5.QtWidgets import (QApplication, QAction, QWidget,
-QMainWindow, QGridLayout,QPushButton, QGroupBox,QVBoxLayout,
-QToolButton, QHBoxLayout, QMenuBar)
+from PyQt5.QtWidgets import (QWidget, QGroupBox,QVBoxLayout,
+QToolButton, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QPixmap, QFont
-from PyQt5.QtCore import pyqtSlot, QSize, Qt
+from PyQt5.QtCore import QSize, Qt
 from functools import partial
 
 class MainWindow(QWidget):
@@ -14,7 +13,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.parent = parent
         self.initUI()
-        self.show()
+        #self.show()
 
     def initUI(self):
         """Creates all user interface elements."""
