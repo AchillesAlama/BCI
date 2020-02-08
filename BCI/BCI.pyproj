@@ -39,9 +39,6 @@
     <Compile Include="views\runView.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="views\startNewTest.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="views\liveView.py">
       <SubType>Code</SubType>
     </Compile>

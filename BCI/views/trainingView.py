@@ -7,7 +7,6 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate
 
 from controllers.dbController import DBController
-from controllers.runController import RunController
 
 class TrainingWindow(QWidget):
     """Contains all the elements necessary for user to enter
@@ -52,17 +51,14 @@ class TrainingWindow(QWidget):
 
         #Add run starting button
         self.runButton = QPushButton("Start run")
-        self.runButton.clicked.connect(self.setRunController)
+        self.runButton.clicked.connect(self.controller.startRun)
         self.runButton.setEnabled(False) #Should only be activated by choice of user
         grid.addWidget(self.runButton, 1, 1)
 
         #Set main layout
         self.setLayout(grid)
     
-    def setRunController(self):
-        """Creates a new RunController and saves it to the attribute in this class.
-        Used to start new runs by connecting to "start run" button."""
-        self.controller.runController = RunController(parent =self.controller)
+    
 
 class UserPopup(QWidget):
     """Super class for the two popups which allows users to be edited or added.

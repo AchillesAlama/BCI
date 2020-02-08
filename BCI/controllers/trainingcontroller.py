@@ -7,6 +7,7 @@ from time import sleep
 import random
 from views.trainingView import TrainingWindow, UserEditPopup, UserAddPopup
 from controllers.dbController import DBController
+from controllers.runController import RunController
 
 
 class TrainingController():
@@ -18,6 +19,24 @@ class TrainingController():
 
         #Fill the user table
         self.updateUserTable()
+    
+    def startRun(self):
+        """Starts a new run after showing user a message asking to verify correct
+        run data."""
+        #Ask user for verification
+        usrData = self.getCurrentUserData()
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Run data verification")
+        msg.setText(("You are about to start a run for user %s with ID %s. " +
+        "Please make sure this is correct. You can abort the run at any time " +
+        "by pressing the Escape button.") % (usrData['Name'], usrData['User_ID']))
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        retval = msg.exec_()
+
+        #Only start run if user pressed OK
+        if retval == QMessageBox.Ok:
+            self.runController = RunController(parent =self)
 
     def handleUserButtonEnable(self):
         """Handles activation/deactivation of start run/delete user/edit user buttons.
