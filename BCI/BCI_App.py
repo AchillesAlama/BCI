@@ -5,6 +5,8 @@ from controllers.mainController import MainController
 import sys
 from functools import partial
 
+import utility.ultraCortexConnector as ucon
+
 class App(QMainWindow):
 
     def __init__(self):
@@ -39,7 +41,7 @@ class App(QMainWindow):
             fileMenu.addAction(modeAction)
 
         self.show()
-
+        
 if __name__ == '__main__':
     root = QApplication(sys.argv)
     ex = App()

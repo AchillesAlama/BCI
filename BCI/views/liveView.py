@@ -6,7 +6,7 @@ class LiveWindow(QWidget):
 
     def __init__(self, parent = None):
         super().__init__()
-        self.parent = parent
+        self.controller = parent
         self.initPlot()
 
     def initPlot(self):

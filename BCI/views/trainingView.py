@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QLineEdit,
                            QVBoxLayout, QHBoxLayout, QMessageBox, 
                            QDateEdit, QComboBox)
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 
 from controllers.dbController import DBController
 
@@ -27,11 +27,12 @@ class TrainingWindow(QWidget):
         userBox.setTitle("Select user for run")
         userBoxLayout = QVBoxLayout()
         userBox.setLayout(userBoxLayout)
-        self.userTable = QTableWidget(self)
         userBtns = QGroupBox()
         userBtnsLayout = QHBoxLayout()
         userBtns.setLayout(userBtnsLayout)
         
+        self.userTable = QTableWidget(self)
+
         #Add buttons to delete/add/edit users
         self.addUserBtn = QPushButton("Add User")
         self.addUserBtn.clicked.connect(self.controller.addUser)

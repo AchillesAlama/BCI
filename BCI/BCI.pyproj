@@ -35,6 +35,9 @@
     <Compile Include="models\dbModel.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="utility\infoDisplay.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="utility\ultraCortexConnector.py" />
     <Compile Include="views\runView.py">
       <SubType>Code</SubType>

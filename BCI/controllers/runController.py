@@ -1,11 +1,16 @@
 from views.runView import RunView
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QLabel, QMessageBox
+from PyQt5.QtCore import QTimer, QThread
+from PyQt5.QtWidgets import QLabel, QMessageBox, QApplication
 from PyQt5.QtGui import QGuiApplication
 import os.path
 from os import walk
+from collections import OrderedDict
 import random
 from PyQt5.QtGui import QPixmap
+
+from controllers.dbController import DBController
+import utility.ultraCortexConnector as ucc
+import utility.infoDisplay as id
 
 class RunController():
     """This class controls the window responsible for showing different images
@@ -22,14 +27,38 @@ class RunController():
         self.imgFileNames = self.getImgFilePaths()
         self.currentIndex = 0 #Current position in the sequence list
         self.runInProgress = False #Flag true when pictures are showing
-        self.startPictureLoop()
+        self.boardConnection = None
+        self.samplesThread = None
+        self.samplesDict = OrderedDict() #Keeps track of all samples of run
+        for i in range(16):
+            self.samplesDict[str(i)] = []
 
-    def startPictureLoop(self):
-        """Creates and starts a timer which triggers a function every second
-        to iterate through the images to be shown."""
+        #Timer triggers image changing
         self.imgChangeTimer = QTimer(self.view)
         self.imgChangeTimer.timeout.connect(self.setRandomPicture)
-        self.imgChangeTimer.start(1000)
+
+        #Starts run
+        self.startRun()
+        
+
+    def startRun(self):
+        #Connect to the board and start run
+        self.view.centralLabel.setText("Connecting to board...")
+        QApplication.processEvents()
+        self.boardConnection = ucc.connectToBoard()
+        if self.boardConnection:
+            self.view.centralLabel.setText("Connected to board, starting run...")
+            QApplication.processEvents()
+            self.samplesThread = SampleSaveThread(self.boardConnection, self.samplesDict)
+            self.samplesThread.start()
+
+            #Start picture iteration
+            self.imgChangeTimer.start(1000)
+            QApplication.processEvents()
+        else:
+            id.makeErrorPopup("Could not connect to board.")
+            self.stopRun()
+        
 
     def setRandomPicture(self):
         """Is called every second by timer. Sets the image in the central label
@@ -48,6 +77,7 @@ class RunController():
         if (self.currentIndex == (len(self.runSequence))):
             self.stopRun()
             self.runInProgress = False
+            
         else:
             #Use the next index in randImgSequence for picture choosing
             randImg = self.imgFileNames[self.runSequence[self.currentIndex]]
@@ -58,6 +88,9 @@ class RunController():
         """Stops the timer and closes run window."""
         self.imgChangeTimer.stop()
         self.view.close()
+        if self.samplesThread:
+            self.samplesThread.quit()
+            print(self.samplesDict)
 
     def getImgFilePaths(self):
         """Returns a list of names of the files to be iterated through"""
@@ -128,3 +161,11 @@ class RunController():
         msg.setStandardButtons(QMessageBox.Ok)
         retval = msg.exec_()
         
+class SampleSaveThread(QThread):
+    def __init__(self, boardConnection, samplesDict):
+        QThread.__init__(self)
+        self.boardConnection = boardConnection
+        self.samplesDict = samplesDict
+
+    def run(self):
+        ucc.saveSampsToDict(self.boardConnection, self.samplesDict)
