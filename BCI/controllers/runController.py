@@ -1,4 +1,4 @@
-from views.runView import RunView
+from runView import RunView
 from PyQt5.QtCore import QTimer, QThread
 from PyQt5.QtWidgets import QLabel, QMessageBox, QApplication
 from PyQt5.QtGui import QGuiApplication
@@ -8,7 +8,7 @@ from collections import OrderedDict
 import random
 from PyQt5.QtGui import QPixmap
 
-from controllers.dbController import DBController
+from dbController import DBController
 import utility.ultraCortexConnector as ucc
 import utility.infoDisplay as id
 
@@ -28,7 +28,7 @@ class RunController():
         self.currentIndex = 0 #Current position in the sequence list
         self.runInProgress = False #Flag true when pictures are showing
         self.boardConnection = None
-        self.samplesThread = None
+        self.samplesThread = None # QThread responsible for running the EEG stream
         self.samplesDict = OrderedDict() #Keeps track of all samples of run
         for i in range(16):
             self.samplesDict[str(i)] = []
@@ -40,7 +40,6 @@ class RunController():
         #Starts run
         self.startRun()
         
-
     def startRun(self):
         #Connect to the board and start run
         self.view.centralLabel.setText("Connecting to board...")
@@ -50,7 +49,6 @@ class RunController():
             self.view.centralLabel.setText("Connected to board, starting run...")
             QApplication.processEvents()
             self.samplesThread = SampleSaveThread(self.boardConnection, self.samplesDict)
-            self.samplesThread.start()
 
             #Start picture iteration
             self.imgChangeTimer.start(1000)
@@ -83,6 +81,9 @@ class RunController():
             randImg = self.imgFileNames[self.runSequence[self.currentIndex]]
             self.currentIndex +=1 
             self.view.setNewImage(randImg)
+            # At first picture shown, start data collection immediately
+            if self.samplesThread and not self.samplesThread.isRunning():
+                self.samplesThread.start()
 
     def stopRun(self):
         """Stops the timer and closes run window."""
