@@ -6,9 +6,6 @@ class TestingWindow(QWidget):
         self.parent = parent
         self.initTesting()
 
-        from controllers.dbController import DBController
-        DBController().dummyDataGen("Hans Schwitzensteiner")
-
     def initTesting(self):
         testGrid = QGridLayout()
         

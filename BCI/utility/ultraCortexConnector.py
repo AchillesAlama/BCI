@@ -1,7 +1,8 @@
 from pyOpenBCI import OpenBCICyton
 from functools import partial 
-from controllers.dbController import DBController
+from dbController import DBController
 from utility import infoDisplay as id
+import datetime
 
 SCALE_FACTOR_EEG = (4500000)/24/(2**23-1) #uV/count
 
@@ -9,21 +10,29 @@ def connectToBoard():
     try:
         board = OpenBCICyton(daisy=True)
         return board
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
-def saveSampsToDict(board, samplesDict):
+def saveSampsToList(board, samplesList):
     """This function is responsible for saving the EEG samples during a run."""
-    callback = partial(saveSampsToDictCallback, samplesDict=samplesDict)
+    callback = partial(saveSampsToListCallback, samplesList=samplesList, boardCon = board)
     board.start_stream(callback)
 
-def saveSampsToDictCallback(sample, samplesDict):
+def saveSampsToListCallback(sample, samplesList, boardCon):
         """ To be used as callback function in start_stream() to
         save each sample to DB
+
+        @samplesList (list of OpenBciSamples): All the samples of a run.
+        @boardCon (OpenBCICyton object): repreysents the connection to the board. 
         """
-        for i in range(0, 16):
-            val = sample.channels_data[i] * SCALE_FACTOR_EEG
-            samplesDict[str(i)].append(val)
+        #Set (UTC, not local) start time first time (important! default start time is set to
+        #the time a connection to the board was made, but for our synthetic generation
+        #of timestamps the start time needs to be the time the sampling starts)
+        if len(samplesList) == 0:
+            boardCon.start_time = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")
+        
+        samplesList.append(sample)
 
 def printChannel(channelNum):
     try:
@@ -41,6 +50,17 @@ def printChannelsCallback(sample, channelNum):
     """
     print(sample.channels_data[channelNum-1])
    
+def getNumberPlacementTuples():
+    """Returns a list of tuples which connects a channel numbers
+    to a position as according to the international 10/20 system
+    of EEG sensor placement."""
+    
+    placements = ["fp1", "fp2", "c3", "c4", #Order matches numbers 1-16 in OpenBCI head plot
+                    "t5", "t6", "o1", "o2", 
+                    "f7", "f8", "f3", "f4", 
+                    "t3", "t4", "p3", "p4"]
 
-
-
+    tupleList = []
+    for i in range(1, 17): #range does not include upper limit
+        tupleList.append((i, placements[i-1]))
+    return tupleList

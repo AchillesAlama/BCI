@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from pyOpenBCI import OpenBCICyton
-from models.dbModel import User, Channel, Run, Measurement
+from models.dbModel import User, Run, Sample
 from orator import DatabaseManager, Model
 from utility import infoDisplay as id
+from utility import ultraCortexConnector as ucc
 
 class DBController():
 
@@ -27,104 +28,41 @@ class DBController():
     def makeUser(self, name, birthday, gender, nationality):
         return User(Name=name, Birthday=birthday, Gender=gender, Nationality=nationality)
 
-    def makeChannel(self, number, placement, unit, run):
-        newChannel = Channel()
-        newChannel.Number = number
-        newChannel.Placement = placement
-        newChannel.Unit = unit
-        newChannel.Run().associate(run)
-        return newChannel
-
     def makeRun(self, type, user):
         newRun = Run()
-        currentTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        currentTime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         newRun.Starttime = currentTime
         newRun.type=type
         newRun.User().associate(user) 
         return newRun
     
-    def makeMeasurement(self, value, sampleNumber, channel, category):
-        newMeasurement = Measurement()
-        currentTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        newMeasurement.Timestamp = currentTime
-        newMeasurement.Value = value
-        newMeasurement.SampleNumber = sampleNumber
-        newMeasurement.Category = category
-        newMeasurement.Channel().associate(channel)
-        return newMeasurement
-
-    def dummyDataGen(self, username):
-        """ Creates a new user, new run, 16 channels and random data and 
-        saves to DB. For filling DB with dummy data for debugging purposes.
-        """
-        # Make new user and run
-        import random as r
-
-        #get random date between two dates
-        start = datetime(1990, 1, 1, 0, 0, 0)
-        end = datetime.now()
-        birth = start + timedelta(seconds=r.randint(0, int((end - start).total_seconds())))
-        birth = birth.date()
-
-        #random male or female
-        gender = "male" if r.randint(0, 1) == 0 else "female"
-
-        #nationality 
-        nations = ["english", "american", "bulgarian", "spanish", "french", "german", "swedish", "danish", "norwegian"]
-        nationality = nations[r.randint(0, len(nations)-1)]
-
-        #make user
-        newUser = self.makeUser(username, birth, gender, nationality)
-        newUser.save()
-        newRun = self.makeRun(1, newUser)
-        newRun.save()
-        placements = ["fp1", "fp2", "c3", "c4", #Order matches numbers 1-16 in OpenBCI head plot
-                      "t5", "t6", "o1", "o2", 
-                      "f7", "f8", "f3", "f4", 
-                      "t3", "t4", "p3", "p4"]
-        channels = []
-
-        #Make channels
-        for i, place in enumerate(placements):
-            newChan = self.makeChannel(i, place, "uV", newRun)
-            newChan.save()
-            channels.append(newChan)
-
-        #Create measurements for each channel
-        nMeasurements = 100
-        currentCat = r.randint(1,5)
-        for counter in range(0,nMeasurements):
-            currentCat = r.randint(1,5) if counter % 10 == 0 else currentCat
-            for chan in channels:
-                newMeas = self.makeMeasurement(r.randrange(10000), counter, chan, currentCat)
-                newMeas.save()
-
-    def getUserSamples(self, user, testType):
-        """Returns all time samples for a certain user for a certain test type.
-        @user (string):     
-            User for which to find samples
-        @testType (int): 
-            Integer code for which kind of training mode was used when 
-            gathering the data.
-        @return (dict): 
-            Dict with arrays of dicts, 
-            on the form {channel 1: [{value: ..., timestamp: ..., category: ...}],
-                         channel 2: [...]}. 
-            Each channel sorted by timestamp.
-        """
-        resultDict = {}
-        for i in range(1, 16):
-            userSampleQuery = """select measurement.Value, measurement.Timestamp, measurement.Category from 
-measurement join channel on channel.channel_id = measurement.idChannel
-join Run on run.run_id = channel.idRun
-join User on user.user_id = run.idUser
-where channel.Number = %d and 
-user.name = "%s" and 
-run.type = %d 
-order by measurement.timestamp""" % (i, user, testType)
-            resultDict["channel " + str(i)] = self.db.select(userSampleQuery)
+    def makeSample(self, sampleNumber, channelVals, timestamp, run):
+        """Creates and returns a new Sample object to be saved.
         
-        return resultDict
+        @sampleNumber (int): Should correspond to the id sent with every sample
+            from the board.
+        @channelVals (list): Array with the values for each sample. Value
+            at index 0 should be the value for channel 1 and so on.
+        @timestamp (datestring on format "%Y-%m-%d %H:%M:%S"): time at witch 
+            sample was taken, UTC time.
+        @run (Run object): As returned by makeRun for example, the run that 
+            owns this sample.
+        @returns (Sample object): a new sample to be saved to DB. 
+        """
+        newSample = Sample()
+        newSample.Timestamp = timestamp
+
+        for i in range(1, 17):
+            eval("newSample.Channel" + i + "_val = " + str(channelVals[i]))
+
+        newSample.SampleNumber = sampleNumber
+        newSample.Run().associate(run)
+        return newSample
+
+
+    def getUser(self, id):
+        """Returns an actual model object of User, not simple dictionary with info"""
+        return User.first_or_create(User_ID = id)
 
     def getAllUsers(self):
         """Returns a list of dicts with info of all users in DB"""

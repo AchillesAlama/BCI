@@ -71,9 +71,13 @@ class TrainingController():
 
         self.view.userTable.clear()
         self.view.userTable.setRowCount(0)
+        allUsersData = DBController().getAllUsers()
+
+        #Dont do anything if there are no users
+        if (len(allUsersData) == 0):
+            return
 
         #Create user table columns based on DB fields
-        allUsersData = DBController().getAllUsers()
         self.view.userTable.setColumnCount(len(allUsersData[0].keys()))
         self.view.userTable.setHorizontalHeaderLabels(allUsersData[0].keys())
         self.view.userTable.verticalHeader().setVisible(False) #Hide rownums

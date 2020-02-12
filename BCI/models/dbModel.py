@@ -23,25 +23,14 @@ class Run(Model):
     def User(self):
         return User
 
-class Channel(Model):
-    __table__= 'Channel'
-    __primary_key__ = 'Channel_ID'
+class Sample(Model):
+    __table__= 'Sample'
+    __primary_key__ = 'Sample_ID'
     __timestamps__ = False
-    __fillable__ = ['Number', 'Placement', 'Unit']
-    @has_many('idChannel', 'Channel_ID')
-    def Measurements(self):
-        return Measurement
+    fillableList = ['Timestamp', 'Samplenumber']
+    fillableList.append(["Channel"+ str(i) + "_val" for i in range(1, 17)])
+    __fillable__ = fillableList
 
     @belongs_to('idRun', 'Run_ID')
-    def Run(self):
-        return Run
-
-class Measurement(Model):
-    __table__= 'Measurement'
-    __primary_key__ = 'Measurement_ID'
-    __timestamps__ = False
-    __fillable__ = ['Value', 'Timestamp', 'Samplenumber', 'Category']
-
-    @belongs_to('idChannel', 'Channel_ID')
     def Channel(self):
         return Channel

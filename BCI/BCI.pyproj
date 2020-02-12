@@ -60,9 +60,6 @@
     <Compile Include="controllers\testingController.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="models\mainModel.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
