@@ -14,7 +14,7 @@ class DBController():
                         'host': 'localhost',
                         'database': 'mydb',
                         'user': 'root',
-                        'password': 'beetroot',
+                        'password': '',
                         'prefix': ''
                 }
         }
