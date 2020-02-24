@@ -1,10 +1,14 @@
 from pyOpenBCI import OpenBCICyton
+
 from functools import partial 
 from dbController import DBController
 from utility import infoDisplay as id
 import datetime
+from datetime import timezone
 
 SCALE_FACTOR_EEG = (4500000)/24/(2**23-1) #uV/count
+
+DEBUG_TIME = None
 
 def connectToBoard():
     try:
@@ -14,25 +18,25 @@ def connectToBoard():
         print(e)
         return None
 
-def saveSampsToList(board, samplesList):
+def saveSampsForRun(board, samplesList, pauseFlag):
+   
     """This function is responsible for saving the EEG samples during a run."""
-    callback = partial(saveSampsToListCallback, samplesList=samplesList, boardCon = board)
+    callback = partial(saveSampsForRunCallback, samplesList=samplesList, 
+                       boardCon = board, pause=pauseFlag)
     board.start_stream(callback)
 
-def saveSampsToListCallback(sample, samplesList, boardCon):
+def saveSampsForRunCallback(sample, samplesList, boardCon, pause):
+        
         """ To be used as callback function in start_stream() to
         save each sample to DB
 
         @samplesList (list of OpenBciSamples): All the samples of a run.
         @boardCon (OpenBCICyton object): repreysents the connection to the board. 
+        @pause (bool): used to ignore certain samples
         """
-        #Set (UTC, not local) start time first time (important! default start time is set to
-        #the time a connection to the board was made, but for our synthetic generation
-        #of timestamps the start time needs to be the time the sampling starts)
-        if len(samplesList) == 0:
-            boardCon.start_time = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")
         
-        samplesList.append(sample)
+        if (not pause):
+            samplesList.append(sample)
 
 def printChannel(channelNum):
     try:

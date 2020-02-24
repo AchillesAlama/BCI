@@ -16,12 +16,23 @@ class Run(Model):
     __timestamps__ = False
     __fillable__ = ['Starttime', 'Type']
     @has_many('idRun', 'Run_ID')
-    def Channels(self):
-        return Channel
+    def Samples(self):
+        return Sample
+
+    @has_many('idRun', 'Run_ID')
+    def Events(self):
+        return Event
 
     @belongs_to('idUser', 'User_ID')
     def User(self):
         return User
+
+class Encoding(Model):
+    __table__= 'Encoding'
+    __primary_key__ = 'Encoding_ID'
+    __timestamps__ = False
+    __fillable__ = ['code', 'filename']
+
 
 class Sample(Model):
     __table__= 'Sample'
@@ -32,5 +43,9 @@ class Sample(Model):
     __fillable__ = fillableList
 
     @belongs_to('idRun', 'Run_ID')
-    def Channel(self):
-        return Channel
+    def Run(self):
+        return Run
+
+    @belongs_to('idEncoding', 'Encoding_ID')
+    def Encoding(self):
+        return Encoding

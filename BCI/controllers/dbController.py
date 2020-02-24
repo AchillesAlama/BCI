@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from pyOpenBCI import OpenBCICyton
-from models.dbModel import User, Run, Sample
+from models.dbModel import User, Run, Sample, Encoding
 from orator import DatabaseManager, Model
 from utility import infoDisplay as id
 from utility import ultraCortexConnector as ucc
+from datetime import timezone
 
 class DBController():
 
@@ -30,23 +31,36 @@ class DBController():
 
     def makeRun(self, type, user):
         newRun = Run()
-        currentTime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        currentTime = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         newRun.Starttime = currentTime
         newRun.type=type
         newRun.User().associate(user) 
         return newRun
     
-    def makeSample(self, sampleNumber, channelVals, timestamp, run):
+    def makeEncoding(self, code ,fileName):
+        """Creates and returns a new encoding object to be saved, or returns a ref to
+        an existing such object if an encoding with such attributes already exists.
+      
+        @code (int): Encoding of the file.
+        @fileName (string): Name of the file.s
+        @returns (Encoding object): object to be saved to database with .save().
+        """
+        newEncoding = Encoding.first_or_create(code=code, filename=fileName)
+        return newEncoding
+
+    def makeSample(self, sampleNumber, channelVals, timestamp, run, encoding):
         """Creates and returns a new Sample object to be saved.
         
         @sampleNumber (int): Should correspond to the id sent with every sample
             from the board.
         @channelVals (list): Array with the values for each sample. Value
             at index 0 should be the value for channel 1 and so on.
-        @timestamp (datestring on format "%Y-%m-%d %H:%M:%S"): time at witch 
+        @timestamp (datestring on format "%Y-%m-%d %H:%M:%S"): time at which 
             sample was taken, UTC time.
         @run (Run object): As returned by makeRun for example, the run that 
             owns this sample.
+        @encoding(Encoding object): as returned by makeEncoding, the encoding
+            showing which img was shown during this sample.
         @returns (Sample object): a new sample to be saved to DB. 
         """
         newSample = Sample()
@@ -57,11 +71,12 @@ class DBController():
 
         newSample.SampleNumber = sampleNumber
         newSample.Run().associate(run)
+        newSample.Encoding().associate(encoding)
         return newSample
 
 
     def getUser(self, id):
-        """Returns an actual model object of User, not simple dictionary with info"""
+        """Returns an actual User object, not simple dictionary with info"""
         return User.first_or_create(User_ID = id)
 
     def getAllUsers(self):

@@ -9,12 +9,16 @@ import random
 from PyQt5.QtGui import QPixmap
 from time import sleep
 import numpy as np
+import ntpath
+from datetime import timezone
 
+import utility.encoder as enc
 from dbController import DBController
 import utility.ultraCortexConnector as ucc
 import utility.infoDisplay as id
 from datetime import (datetime, timedelta)
 import math
+import utility.helpers
 
 class RunController():
     """This class controls the window responsible for showing different images
@@ -26,15 +30,18 @@ class RunController():
 
         self.randImgSequence = self.getRandomImgSequence(4, 16) # Controls sequence of images
         countDown = 3 #Number to count down from
-        self.pictureLength = 1000 #Milliseconds to show each picture
+        self.pictureLength = 4000 #Milliseconds to show each picture
         self.countdown = [i for i in range(1, countDown+1)][::-1] #Countdown numbers list
         self.runSequence = self.countdown + self.randImgSequence #Iterate first through countdown then images
-        self.imgFileNames = self.getImgFilePaths()
+        self.imgFileNames = self.getImgFilePaths() #filenames of imgs, indirectly controls encodings
+        self.encodings = self.getImgEncodings() 
         self.currentIndex = 0 #Current position in the sequence list
         self.runInProgress = False #Flag true when pictures are showing
         self.boardConnection = None
+        self.encoderConnection = None
         self.samplesThread = None # QThread responsible for running the EEG stream
         self.samplesList = [] #List of OpenBCISamples, keeps track of all samples of run
+        self.eventList = [] #Saves all event info during the run, to be saved as Events in DB after run 
         self.selectedUserId = self.controller.getCurrentUserData()['User_ID']
 
         #Timer triggers image changing
@@ -46,15 +53,29 @@ class RunController():
         self.startRun()
         
     def startRun(self):
-        #Connect to the board and start run
+        #Connect to encoder
+        self.view.centralLabel.setText("Connecting to encoder...")
+        QApplication.processEvents()
+        self.encoderConnection = enc.connectToEncoder()
+
+        if (not self.encoderConnection):
+            msg = id.makeErrorPopup("Could not connect to encoder.")
+            msg.exec()
+            self.stopRun()
+        else:
+            enc.clearEncoding(self.encoderConnection)
+
+        #Connect to the board
         self.view.centralLabel.setText("Connecting to board...")
         QApplication.processEvents()
         
+        #Connect to board
         self.boardConnection = ucc.connectToBoard()
         
         if self.boardConnection:
             self.view.centralLabel.setText("Connected to board, starting run...")
             QApplication.processEvents()
+
             self.samplesThread = SampleSaveThread(self.boardConnection, self.samplesList)
             self.samplesThread.start() #Starting collection of samples
             
@@ -91,6 +112,7 @@ class RunController():
             return
         else:
             self.runInProgress = True
+            #self.imgChangeTimer.setInterval(4000)
 
         #We stop run when sequence is done
         if (self.currentIndex == (len(self.runSequence))):
@@ -101,27 +123,43 @@ class RunController():
             #Use the next index in randImgSequence for picture choosing
             randImg = self.imgFileNames[self.runSequence[self.currentIndex]]
             self.currentIndex +=1 
+            timeOfEvent = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+            
+            #Mark end of img
+            enc.clearEncoding(self.encoderConnection)
+            sleep(0.200) #acts as padding at end of every img to make sure we get some zeros
+
+            #Change img
             self.view.setNewImage(randImg)
+
+            #Trigger new encoding (all new samples coming in with new encoding
+            #MUST have been taken after img change as long as these two functions
+            #never change order)
+            enc.setEncoding(self.encoderConnection, self.encodings[randImg])
+
+            #restarts timer to make sure we have enough time to gather samples
+            self.imgChangeTimer.start() 
+
                 
     def saveSamplesToDB(self):
         
         samplingRate = 250
         dbCon = DBController()
-
-        #Here we assume the 'real' startime (UTC, not local) of the streaming has been set at the 
-        #first call to the sample callback function. Starttime should be start of sampling,
-        #not time of connection to board which is default
-        startTime = datetime.strptime(self.boardConnection.start_time, "%Y-%m-%d_%H%M%S")
         
         #This makes sure all the saving is atomic
         with dbCon.db.transaction():
-            #Get existing user, make new run, and save each samples
+            #Create the run and connect to user
             currentUser = dbCon.getUser(self.selectedUserId)
             newRun = dbCon.makeRun(1, currentUser)
             newRun.save()
 
-            #Make the 16 channels
-            placements = ucc.getNumberPlacementTuples()
+            #Create the encodings used in this run
+            encodings = []
+            for filename, encoding in self.encodings.items():
+                encodings.append(dbCon.makeEncoding(code=encoding, fileName=filename))
+
+            for encoding in encodings:
+                encoding.save()
 
             print("About to create %d samples" % (len(self.samplesList)*16))
 
@@ -132,23 +170,20 @@ class RunController():
 
             #Create channel names to match fields in DB
             channelQueryStr = ", ".join(["Channel" + str(i) + "_val" for i in range(1, 17)])
-            baseQuery = "insert into sample (Timestamp, SampleNumber, idRun, " + channelQueryStr + ") values (\"%s\", %d, %d, " + "%d, "*15 + "%d)"
+            baseQuery = "insert into sample (SampleNumber, idRun, idEncoding, " + channelQueryStr + ") values (\"%s\", %d, %d, " + "%d, "*15 + "%d)"
 
             #Adjust the ids (problem described in adjustIDs description)
             self.adjustSampleIDs(self.samplesList)
 
-            #Generate "synthetic" timestamps of samples using sampleNums, samplerate and starttime,
-            #we assume starttime is the time when the sampling starts
             for sample in self.samplesList:
-                timeDelta = timedelta(microseconds = sample.id*1000000.0/samplingRate) #time since start
-                timestamp = (startTime + timeDelta).strftime("%Y-%m-%d %H:%M:%S.%f")
+                #Find the encoding object which should be connected to this sample
+                enc = list(filter(lambda x: x.code == int(sample.aux_data[0]) ,encodings))[0]
                 
                 #Build tuple to match baseQuery for value insertion into string
-                valueTuple = (timestamp, sample.id, newRun.Run_ID)
+                valueTuple = (sample.id, newRun.Run_ID, enc.Encoding_ID, )
                 for i in range(16):
                     valueTuple += (sample.channels_data[i], )
 
-                
                 dbCon.db.statement(baseQuery % valueTuple)
                     
                 measCntr += 1
@@ -185,21 +220,28 @@ class RunController():
         """Stops the timer, closes connection to board and closes run window."""
         self.imgChangeTimer.stop()
 
+        if self.encoderConnection:
+            enc.closeEncoder(self.encoderConnection)
+
         if self.boardConnection:
             #The sleeps in between seem to be important
             self.boardConnection.stop_stream()
             sleep(0.5)
             self.boardConnection.write_command('v') #soft reset of the board
             sleep(0.5)
+            self.boardConnection.disconnect()
+            sleep(0.5)
             
-            #We rely on the runController (and hence self.boardConnection) 
-            #being destroyed at end of this function, since the destruction
-            #should trigger a disconnect from the board (see init function of
-            #OpenBCICyton). Using the board's disconnect function directly 
-            #sometimes triggers a crash, cause yet unknown.
-            
-        if self.samplesThread:
+        if self.samplesThread and self.boardConnection:
             self.samplesThread.quit()
+
+            #Clean the samples
+            self.samplesList = self.cleanSamplesByEncoding(self.samplesList)
+            self.samplesList = self.removeMarginSamples(self.samplesList)
+
+            for sample in self.samplesList:
+                print(int(sample.aux_data[0]))
+
             msg = id.makeYesNoPopup("Run successfully completed. Do you want to save samples to database?")
             retval = msg.exec()
             if retval == QMessageBox.Yes:
@@ -208,7 +250,7 @@ class RunController():
         #Each run will instantiate a new run controller, less error prone than
         #manual maintenence of vars
         self.view.close()
-        del self 
+        del self
 
     def getImgFilePaths(self):
         """Returns a list of names of the files to be iterated through"""
@@ -265,6 +307,57 @@ class RunController():
 
         return sequences
          
+    def getImgEncodings(self):
+        """Returns a dictionary of tuples with the key being the image file name
+        and the value being the corresponding encoding. Note that 0 is invalid encoding.
+        """
+
+        out = {}
+        for i, img in enumerate(self.imgFileNames):
+            out[img] = i+1
+        return out
+
+    def removeMarginSamples(self, samplesList):
+        """At end of every img shown there should be some zeros inserted to
+        clearly mark the end of the event. This function removes all these zero samples.
+        The zero samples were introduced to mark exactly which samples from the end
+        can be deleted, so no end samples actually belong to the following img."""
+
+        return list(filter(lambda x: int(x.aux_data[0]) != 0, samplesList))
+
+    def cleanSamplesByEncoding(self, samplesList):
+        """Sometimes the Cyton board catches middle values between valid encodings.
+        So between e.g. encodings 1 and 3 (img changes from 1 to 3) there might
+        be a few samples with encoding 2 for example. This probably comes from 
+        the encoder not changing the pin values fast enough compared to the Cyton
+        sampling rate. This function finds and removes these middle values."""
+        
+        cntr = 0 # counts number of new encodings after a change
+        tolerance = 10 #min num. of samples in a row needing the same encoding not to be deleted
+
+        currentEncoding = oldEncoding = int(samplesList[0].aux_data[0])
+        for i in range(len(samplesList)):
+            currentEncoding = int(samplesList[i].aux_data[0])
+            
+            if currentEncoding != oldEncoding:
+                #streak broken, if less than tolerance mark sample for later deletion
+                if cntr <= tolerance:
+                    for j in range(1,cntr+1):
+                        samplesList[i-j].aux_data[0] = 255
+                
+                oldEncoding = currentEncoding 
+                cntr = 1 #first new encoding
+                
+            else:
+                cntr += 1 # streak continues
+
+        #We avoided deletion in previous loop since that would change the length
+        #of the list we are iterating through. Now we return a filtered list
+        #based on the markings.
+
+        return list(filter(lambda x: int(x.aux_data[0]) != 255 ,samplesList))
+
+
     def escapePressed(self):
         """Triggers when user presses escape. Aborts the run and nothing is
         saved to DB."""
@@ -287,9 +380,18 @@ class SampleSaveThread(QThread):
         QThread.__init__(self)
         self.boardConnection = boardConnection
         self.samplesList = samplesList
+        self.pauseFlag = False
+
+    def pause(self):
+        """Doesn't actually pause anything, just makes the sample callback
+        ignore samples for a while."""
+        self.pauseFlag = True
+
+    def unpause(self):
+        self.pauseFlag = False
 
     def run(self):
-        ucc.saveSampsToList(self.boardConnection, self.samplesList)
+        ucc.saveSampsForRun(self.boardConnection, self.samplesList, self.pauseFlag)
 
     def isStreamingStarted(self):
         """Returns true if the first samples have been received."""
@@ -319,6 +421,7 @@ class SaveDBProgressBar(QDialog):
         grid.addWidget(self.cancelBtn, 2, 0)
         self.setLayout(grid)
         self.show()
+
 
     def stop(self):
         self.stopFlag = True

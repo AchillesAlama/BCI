@@ -27,12 +27,18 @@
     <Compile Include="controllers\dbController.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="utility\encoder.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="controllers\mainController.py" />
     <Compile Include="controllers\runController.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="controllers\trainingController.py" />
     <Compile Include="models\dbModel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utility\helpers.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utility\infoDisplay.py">
