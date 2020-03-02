@@ -84,6 +84,22 @@ class DBController():
         userQuery = "select * from user"
         return self.db.select(userQuery)
 
+    def getAllUserSamples(self, userID):
+        """Returns a list of dictionaries filled with information about
+        the EEG values from all runs made by a certain user."""
+        
+        query = ("select Run_ID, SampleNumber, filename, Channel1_val, Channel2_val,"+
+                "Channel3_val, Channel4_val, Channel5_val Channel6_val,"+
+                "Channel7_val, Channel8_val, Channel9_val, Channel10_val, Channel11_val,"+
+                "Channel12_val, Channel13_val, Channel14_val, Channel15_val, Channel16_val "+
+                "from user join run "+
+                "on run.idUser = user.User_ID join "+
+                "sample on sample.idRun = run.Run_ID join "+
+                "encoding on encoding.Encoding_ID = sample.idEncoding "+
+                "where user.User_ID = %d;" % userID)
+
+        return self.db.select(query)
+
     def deleteUser(self, userID):
         """Deletes user from database based on user ID.
         @userID (str): 

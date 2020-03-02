@@ -27,6 +27,9 @@
     <Compile Include="controllers\dbController.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="controllers\mlController.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="utility\encoder.py">
       <SubType>Code</SubType>
     </Compile>
@@ -45,6 +48,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="utility\ultraCortexConnector.py" />
+    <Compile Include="views\mlView.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="views\runView.py">
       <SubType>Code</SubType>
     </Compile>

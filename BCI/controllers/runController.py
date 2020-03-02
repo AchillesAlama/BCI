@@ -390,7 +390,7 @@ class RunController():
         @returns (bool): True if bad channel detected."""
 
         #Don't analyse runs less than a second
-        if len(sampleList) <= sampleFreq:
+        if (len(sampleList) <= sampleFreq):
             raise Exception("Can't analyze runs with too few samples.")
 
         #Extract each channels sample values into seperate lists

@@ -27,6 +27,7 @@ class App(QMainWindow):
         self.mainSpace.addWidget(self.controller.trainingController.view)
         self.mainSpace.addWidget(self.controller.testingController.view)
         self.mainSpace.addWidget(self.controller.liveController.view)
+        self.mainSpace.addWidget(self.controller.mlController.view)
         self.mainSpace.setCurrentWidget(self.controller.view)
         self.adjustSize() #TODO: QStackedWidget sizes to biggest of its widgets, keep or change?
 

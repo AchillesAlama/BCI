@@ -21,9 +21,9 @@ class MainWindow(QWidget):
         self.horizontalGroupBox = QGroupBox()
         grid = QHBoxLayout()
 
-        #Create and add the 3 buttons
+        #Create and add the 4 buttons
         btnFont = QFont('Helvetica', 16, 50)
-        for mode in ['live_mode', 'training_mode', 'test_mode']:
+        for mode in ['live_mode', 'training_mode', 'model_training_mode', 'test_mode']:
             modeBtn = QToolButton(self)
             modeBtn.setText(mode.replace("_", " ").title())
             modeBtn.setIcon(QIcon(QPixmap('images/'+ mode)))
