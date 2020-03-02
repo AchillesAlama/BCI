@@ -9,6 +9,7 @@ import random
 from PyQt5.QtGui import QPixmap
 from time import sleep
 import numpy as np
+import statistics
 import ntpath
 from datetime import timezone
 
@@ -239,13 +240,17 @@ class RunController():
             self.samplesList = self.cleanSamplesByEncoding(self.samplesList)
             self.samplesList = self.removeMarginSamples(self.samplesList)
 
-            for sample in self.samplesList:
-                print(int(sample.aux_data[0]))
+            #Analyze the samples
+            if self.hasBadConnections(self.samplesList, 125, 1):
+                msg = id.makeErrorPopup("Bad channels detected. This run" +
+                                        " will not be saved to DB.")
+                msg.exec()
 
-            msg = id.makeYesNoPopup("Run successfully completed. Do you want to save samples to database?")
-            retval = msg.exec()
-            if retval == QMessageBox.Yes:
-                self.saveSamplesToDB()
+            else:
+                msg = id.makeYesNoPopup("Run successfully completed. Do you want to save samples to database?")
+                retval = msg.exec()
+                if retval == QMessageBox.Yes:
+                    self.saveSamplesToDB()
 
         #Each run will instantiate a new run controller, less error prone than
         #manual maintenence of vars
@@ -372,6 +377,46 @@ class RunController():
         msg.setStandardButtons(QMessageBox.Ok)
         retval = msg.exec_()
         
+    def hasBadConnections(self, sampleList, sampleFreq, stdevLim):
+        """Meant for post-analysis of the samples, looks for practically 
+        unchanging values for a period of time (in each channel) and returns 
+        True if it detects a probable bad connection, False otherwise.
+        @sampleList (list): List with all the OpenBCISample objects.
+        @sampleFreq (int): Really the frequency at which we receive samples, 
+            if the Ultracortex samples at 250Hz, we receive them at 125Hz.
+        @stdevLim (float): Lower limit of std. deviation which the samples need 
+            to exceed not to be deemed too static. Find by experiment.
+        @raises (Exception): If sample list too short.
+        @returns (bool): True if bad channel detected."""
+
+        #Don't analyse runs less than a second
+        if len(sampleList) <= sampleFreq:
+            raise Exception("Can't analyze runs with too few samples.")
+
+        #Extract each channels sample values into seperate lists
+        channelVals = []
+        for i in range(16):
+            channelVals.append([])
+            for sample in sampleList:
+                channelVals[i].append(sample.channels_data[i])
+
+        #Check for variation in each channel in half second windows
+        halfSecondSamps = math.floor(sampleFreq/2)
+        for i in range(16):
+            
+            for windowCntr in range(round(len(channelVals[i]) / halfSecondSamps)):
+                startIndex = windowCntr*halfSecondSamps
+
+                #Make sure we dont go out of array bounds in last iteration
+                sampsToEnd = len(channelVals[i]) - (startIndex+1)
+                endIndex = startIndex + min(sampsToEnd, halfSecondSamples)
+                
+                #Check the window's std. dev.
+                if statistics.stdev(channelVals[i][startIndex:endIndex]) < stdevLim:
+                    return True
+
+        return False
+
 class SampleSaveThread(QThread):
     """This thread is responsible for starting the streaming of the EEG samples.
     This way we can receive samples at the same time as we are iterating through
