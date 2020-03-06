@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 from PyQt5.QtWidgets import (QApplication, QAction,
                             QLabel, QWidget, QMainWindow,
                            QGridLayout,QPushButton, QGroupBox,
@@ -15,11 +16,22 @@ from liveController import LiveController
 from ultraCortexConnector import connectToBoard
 
 SCALE_FACTOR_EEG = (4500000)/24/(2**23-1) #uV/count
+=======
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QGroupBox, QHBoxLayout)
+from PyQt5 import QtGui, QtCore
+import numpy as np
+import time
+import psutil
+import matplotlib.pyplot as plt
+
+SCALE_FACTOR_EEG = (4500000)/24/(2**23-1) 
+>>>>>>> Stashed changes
 
 class LiveWindow(QWidget):
 
     def __init__(self, parent = None):
         super().__init__()
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         self.parent = parent
         self.initPlot()
@@ -73,3 +85,38 @@ class getSample(QThread):
 
     def run(self):
         self.boardConnection.start_stream(callback)
+=======
+        self.controller = parent
+        self.grid = QGridLayout()
+        self.loadPlot = QtGui.QPushButton("Start",self)
+        self.loadPlot.clicked.connect(lambda: self.controller.loadPlots())
+        self.grid.addWidget(self.loadPlot)
+        self.setLayout(self.grid) 
+
+    def initPlot(self, x):
+        self.x = x
+        #print(len(x))
+        #if (len(x) > 50):
+        #    x1 = [x.channels_data[0] for x in self.x]
+        #else:
+        #    pass
+        matplotlib.use("Agg")
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        fig.show()
+        i = 0
+        x, y = [], []
+
+        while True:
+            x.append(i)
+            y.append(psutil.cpu_percent())
+    
+            ax.plot(x, y, color='b')
+    
+            fig.canvas.draw()
+    
+            ax.set_xlim(left=max(0, i-50), right=i+50)
+    
+            time.sleep(0.1)
+            i += 1
+>>>>>>> Stashed changes

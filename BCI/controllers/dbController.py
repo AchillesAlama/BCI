@@ -83,6 +83,7 @@ class Channel(Model):
     def Measurements(self):
         return Measurement
 
+<<<<<<< Updated upstream
     @belongs_to('idRun', 'Run_ID')
     def Run(self):
         return Run
@@ -96,3 +97,11 @@ class Measurement(Model):
     @belongs_to('idChannel', 'Channel_ID')
     def Channel(self):
         return Channel
+=======
+    def deleteUser(self, userID):
+        """Deletes user from database based on user ID.
+        @userID (str): 
+            ID of user to be deleted.
+        """
+        deletedRows = User.where('user_id', '=', userID).delete()
+>>>>>>> Stashed changes
